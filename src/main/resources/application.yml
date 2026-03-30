@@ -1,0 +1,72 @@
+# Spring Boot 应用配置
+spring:
+  # 应用基本信息
+  application:
+    name: local-rag
+  
+  # Ollama 配置
+  # 注意：需要确保 Ollama 服务已启动（执行命令：ollama serve）
+  # 注意：需要确保所需嵌入模型已下载（执行命令：ollama pull nomic-embed-text）
+  ai:
+    ollama:
+      # Ollama 服务 URL
+      base-url: http://localhost:11434
+      # 聊天模型名称，可根据实际情况修改
+      # 注意：需要确保 Ollama 的对话模型已下载（执行命令：ollama pull qwen2.5:7b）
+      chat:
+        model: qwen2.5:7b
+      # 嵌入模型名称，推荐使用 nomic-embed-text 或 bge-m3
+      embedding:
+        model: nomic-embed-text
+    
+    # 向量存储配置
+    vectorstore:
+      chroma:
+        # Chroma 服务 URL
+        base-url: http://localhost:8000
+        # 向量存储集合名称
+        collection-name: rag_docs
+
+# 服务器配置
+server:
+  # 端口配置，默认 8080
+  port: 8080
+  
+  # 上下文路径，默认为 /
+  servlet:
+    context-path: /
+    # 文件上传大小限制
+    multipart:
+      max-file-size: 10MB  # 单个文件最大大小
+      max-request-size: 10MB  # 整个请求最大大小
+
+# RAG 配置
+rag:
+  # 文本分块配置
+  text-splitter:
+    chunk-size: 500  # 分块大小，单位：字符
+    overlap: 50  # 重叠大小，单位：字符
+  # 重排序配置
+  rerank:
+    enabled: true  # 是否启用重排序
+    model:
+      path: C:/models/bge-reranker-v2-m3/model.onnx  # 模型文件路径
+  # Agent 工具调用配置
+  agent:
+    function-calling:
+      enabled: true  # 是否启用工具调用
+      # 工具调用相关配置
+      # 注意：人工需确保模型支持 Function Calling（qwen2.5:7b 和 llama3.1 都支持）
+  # 检索配置
+  retrieval:
+    topK: 5  # 检索返回的文档数量
+    candidate-multiplier: 2  # 候选池倍数（topK * candidate-multiplier）
+  # RAG 配置
+  rag:
+    prompt-template: "基于以下内容回答问题：\n%s\n\n问题：%s\n答案："  # Prompt 模板
+
+# 日志配置
+logging:
+  level:
+    # 设置应用日志级别
+    com.rag: info

@@ -1,0 +1,31 @@
+{
+  "test_status": {
+    "method": "GET",
+    "url": "http://localhost:8080/test/status",
+    "description": "Test if the RAG system is running"
+  },
+  "upload_document": {
+    "method": "POST",
+    "url": "http://localhost:8080/documents/upload",
+    "description": "Upload a document for ingestion",
+    "body": "Use form-data in Postman: key='file', type='File', select a file (e.g., PDF or TXT document)"
+  },
+  "ask": {
+    "method": "POST",
+    "url": "http://localhost:8080/chat/ask",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "{\"question\": \"Explain how Retrieval-Augmented Generation works in AI systems.\"}",
+    "description": "Ask a question and get an answer with sources"
+  },
+  "agent": {
+    "method": "POST",
+    "url": "http://localhost:8080/chat/agent",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "{\"question\": \"Can you help me find information about Spring Framework in my uploaded documents?\", \"history\": [{\"user\": \"What is RAG?\", \"assistant\": \"RAG stands for Retrieval-Augmented Generation, a technique that combines retrieval from a knowledge base with generative models.\"}]}",
+    "description": "Use agent for conversational Q&A with tool calling"
+  }
+}
