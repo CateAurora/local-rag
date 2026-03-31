@@ -65,10 +65,10 @@ public class AgentServiceImpl implements IAgentService {
         if (history != null && !history.isEmpty()) {
             for (Map<String, String> message : history) {
                 if (message.containsKey("user")) {
-                    historyBuilder.append("用户: " + message.get("user") + "\n");
+                    historyBuilder.append("用户: ").append(message.get("user")).append("\n");
                 }
                 if (message.containsKey("assistant")) {
-                    historyBuilder.append("助手: " + message.get("assistant") + "\n");
+                    historyBuilder.append("助手: ").append(message.get("assistant")).append("\n");
                 }
             }
         }
@@ -78,12 +78,12 @@ public class AgentServiceImpl implements IAgentService {
 
         // 构建提示词
         String prompt = String.format("%s\n用户: %s\n\n请根据问题和对话历史回答。如果需要搜索文件，请使用 searchFiles 工具。\n" +
-                "使用工具的格式：\n" +
-                "工具调用: searchFiles\n" +
-                "参数: {\"keyword\": \"搜索关键词\"}\n" +
-                "\n" +
-                "如果不需要使用工具，请直接回答。%s", 
-                historyBuilder.toString(), question, functionCallingEnabled ? toolsDescription : "");
+                        "使用工具的格式：\n" +
+                        "工具调用: searchFiles\n" +
+                        "参数: {\"keyword\": \"搜索关键词\"}\n" +
+                        "\n" +
+                        "如果不需要使用工具，请直接回答。%s",
+                historyBuilder, question, functionCallingEnabled ? toolsDescription : "");
 
         logger.debug("构建的 prompt: {}", prompt);
 
@@ -151,9 +151,9 @@ public class AgentServiceImpl implements IAgentService {
         }
 
         // 如果解析失败，直接返回模型的输出
-        List<Map<String, String>> newHistory = new ArrayList<>(history != null ? history : List.of());
         Map<String, String> userMessage = Map.of("user", question);
         Map<String, String> assistantMessage = Map.of("assistant", modelOutput);
+        List<Map<String, String>> newHistory = new ArrayList<>(history != null ? history : List.of());
         newHistory.add(userMessage);
         newHistory.add(assistantMessage);
 
@@ -179,26 +179,25 @@ public class AgentServiceImpl implements IAgentService {
     /**
      * 将工具执行结果返回给模型
      *
-     * @param question    用户问题
-     * @param history     历史消息
-     * @param toolName    工具名称
-     * @param keyword     搜索关键词
-     * @param files       搜索结果
+     * @param question 用户问题
+     * @param history  历史消息
+     * @param toolName 工具名称
+     * @param keyword  搜索关键词
+     * @param files    搜索结果
      * @return 处理结果
      */
-    private AgentResult callModelWithToolResult(String question, List<Map<String, String>> history, 
-                                              String toolName, String keyword, List<String> files) {
+    private AgentResult callModelWithToolResult(String question, List<Map<String, String>> history,
+                                                String toolName, String keyword, List<String> files) {
         // 构建工具执行结果
         StringBuilder resultBuilder = new StringBuilder();
-        resultBuilder.append("工具执行结果:\n");
-        resultBuilder.append("工具: " + toolName + "\n");
-        resultBuilder.append("参数: {\"keyword\": \"" + keyword + "\"}\n");
-        resultBuilder.append("结果: \n");
+        resultBuilder.append("工具执行结果:\n").append("工具: ").append(toolName).append("\n")
+                .append("参数: {\"keyword\": \"").append(keyword).append("\"}\n")
+                .append("结果: \n");
         if (files.isEmpty()) {
             resultBuilder.append("未找到匹配的文件\n");
         } else {
             for (String file : files) {
-                resultBuilder.append("- " + file + "\n");
+                resultBuilder.append("- ").append(file).append("\n");
             }
         }
 
@@ -207,17 +206,17 @@ public class AgentServiceImpl implements IAgentService {
         if (history != null && !history.isEmpty()) {
             for (Map<String, String> message : history) {
                 if (message.containsKey("user")) {
-                    historyBuilder.append("用户: " + message.get("user") + "\n");
+                    historyBuilder.append("用户: ").append(message.get("user")).append("\n");
                 }
                 if (message.containsKey("assistant")) {
-                    historyBuilder.append("助手: " + message.get("assistant") + "\n");
+                    historyBuilder.append("助手: ").append(message.get("assistant")).append("\n");
                 }
             }
         }
 
         // 构建提示词
-        String prompt = String.format("%s\n用户: %s\n\n%s\n\n请根据工具执行结果回答用户的问题。", 
-                historyBuilder.toString(), question, resultBuilder.toString());
+        String prompt = String.format("%s\n用户: %s\n\n%s\n\n请根据工具执行结果回答用户的问题。",
+                historyBuilder, question, resultBuilder);
 
         logger.debug("构建的工具结果 prompt: {}", prompt);
 
@@ -230,7 +229,7 @@ public class AgentServiceImpl implements IAgentService {
         List<Map<String, String>> newHistory = new ArrayList<>(history != null ? history : List.of());
         Map<String, String> userMessage = Map.of("user", question);
         Map<String, String> toolCallMessage = Map.of("assistant", "工具调用: " + toolName + "\n参数: {\"keyword\": \"" + keyword + "\"}");
-        Map<String, String> toolResultMessage = Map.of("assistant", "工具执行结果: \n" + resultBuilder.toString());
+        Map<String, String> toolResultMessage = Map.of("assistant", "工具执行结果: \n" + resultBuilder);
         Map<String, String> assistantMessage = Map.of("assistant", modelOutput);
         newHistory.add(userMessage);
         newHistory.add(toolCallMessage);
